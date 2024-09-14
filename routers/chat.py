@@ -45,7 +45,7 @@ model_params = {
     'messages': context_model_prompts #Pre-entrenamiento/contexto del modelo
 }
 
-@chat_router.post('/chat/', status_code=status.HTTP_200_OK, tags=["OpenAI"])
+@chat_router.post('/chat/', status_code=status.HTTP_200_OK, tags=["mapabullying.com.ar/chatbot"])
 async def generate_response(prompt: UserPrompt):
     """
     Genera una respuesta a partir de un prompt del usuario.
