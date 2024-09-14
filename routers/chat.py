@@ -8,7 +8,8 @@ import openai
 import os
 import json
 # librerias de fastapi
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, status, HTTPException
+from fastapi.responses import JSONResponse
 
 class UserPrompt(BaseModel):
     user_prompt: str
@@ -38,13 +39,13 @@ with open(filename, 'r') as jsonl:
 
 # Parametros a pasar a la instancia del modelo de OpenAI
 model_params = {
-    'model' : 'o1-mini', #modelo elegido
+    'model' : 'gpt-4o-mini', #'o1-mini', A la espera de que se pueda utilizar 
     'top_p' :  0.35, #Presicion/soltura del modelo - eligira las palabras para las respuestas que tengan un 65% o mas de probabilidad
     'max_tokens':1024, #Cantidad maxima de tokens por respuesta tanto de entrada como de salida
     'messages': context_model_prompts #Pre-entrenamiento/contexto del modelo
 }
 
-@chat_router.post('/chat/')
+@chat_router.post('/chat/', status_code=status.HTTP_200_OK, tags=["OpenAI"])
 async def generate_response(prompt: UserPrompt):
     """
     Genera una respuesta a partir de un prompt del usuario.
@@ -77,6 +78,6 @@ async def generate_response(prompt: UserPrompt):
         # para que sea permanente habria que generar un id unico por usuario en futuras versiones
         context_model_prompts.append({"role": "assistant", "content": model_response})
         #retorna solo la respuesta del asistente
-        return response.choices[0].message.content
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"message":model_response})
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al generar la respuesta: {str(e)}")
